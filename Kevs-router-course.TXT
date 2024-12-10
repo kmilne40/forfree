@@ -1,0 +1,274 @@
+Coach Kevs TRANSIT-Router Configuration Course
+
+Course Overview:  
+This course will guide you through the essential steps of interacting with a Cisco-like router environment using the TRANSIT-router simulator. By the end of this course, you will be familiar with navigating the router’s command-line interface (CLI), viewing and modifying configurations, setting up key features such as a TFTP server, and implementing VLANs.
+
+Target Audience:  
+- Beginner to intermediate network administrators  
+- Networking students or trainees preparing for Cisco certifications  
+- Anyone who wants hands-on practice in a simulated router environment
+
+Prerequisites:  
+- Basic understanding of computer networking (IP addresses, subnets, etc.)
+- Familiarity with command-line interfaces is helpful but not mandatory.
+
+---
+
+ 1. Introduction to the Router Simulator
+
+What is the TRANSIT-router Simulator?  
+The TRANSIT-router simulator emulates a Cisco-like environment, allowing you to practice common network configuration tasks without needing actual hardware. It supports user mode, privileged mode, and configuration mode just like a real Cisco IOS device.
+
+Accessing the CLI:  
+When you first launch the simulator, you will be prompted for a username and password. If you enter the correct credentials (in this case, `cisco/cisco`), you’ll be presented with a greeting (MOTD) and placed into User EXEC Mode, indicated by a `>` prompt.
+
+Modes in Cisco Routers:  
+- User EXEC Mode (>): Basic mode with limited commands.  
+- Privileged EXEC Mode (#): Accessed by typing `enable` and providing a password. In this mode, you can view and change critical settings.  
+- Configuration Mode ((config)#): Entered from privileged mode using `conf t`. In this mode, you can modify the router’s configuration (hostname, interfaces, VLANs, etc.).
+
+---
+
+ 2. Navigating the CLI and Basic Show Commands
+
+Getting Started:  
+Once logged in, you might see a prompt like:
+------------------------------------------------------------------------
+TRANSIT-router> 
+------------------------------------------------------------------------
+This is user mode. Let’s try some basic commands to view the router’s state:
+
+Key Commands:
+
+1. `show version`  
+   - What it does: Displays router’s IOS version, uptime, hardware details, and configuration register value.
+   - Why use it: Helps confirm the device type, memory, and version of the software you’re running.
+
+   Try it:
+   ------------------------------------------------------------------------
+   TRANSIT-router> show version
+   ------------------------------------------------------------------------
+   You’ll see output with IOS version details, uptime, etc.
+
+2. `show arp`  
+   - What it does: Shows the ARP (Address Resolution Protocol) table mapping IP addresses to MAC addresses.
+   - Why use it: Helpful for troubleshooting and understanding which devices the router knows how to reach at the Data Link layer.
+
+   Try it:
+   ------------------------------------------------------------------------
+   TRANSIT-router> show arp
+   ------------------------------------------------------------------------
+
+Note: In user mode, you have limited capabilities. To make configuration changes or run advanced commands, you need to enter privileged mode.
+
+---
+
+ 3. Entering Privileged Mode
+
+How to Enter Privileged Mode:  
+Type `enable` and provide the enable password (in this simulator, `cisco`).
+
+------------------------------------------------------------------------
+TRANSIT-router> enable
+Password: cisco
+TRANSIT-router#
+------------------------------------------------------------------------
+Now your prompt ends with `#`, indicating that you are in privileged EXEC mode. You can now execute more powerful commands, like viewing the full running configuration or making changes.
+
+Commands Available in Privileged Mode:
+
+- `show running-config`: View the current configuration running on the router.
+- `copy run start`: Save the current (running) configuration to startup configuration.
+- `write mem`: Another way to save the configuration.
+
+Try it:
+------------------------------------------------------------------------
+TRANSIT-router# show running-config
+------------------------------------------------------------------------
+You will see detailed configuration lines, including hostname, interfaces, and passwords.
+
+---
+
+ 4. Configuration Mode
+
+To change the router’s configuration, you must enter configuration mode from privileged mode:
+
+------------------------------------------------------------------------
+TRANSIT-router# conf t
+Enter configuration commands, one per line. End with CNTL/Z.
+TRANSIT-router(config)#
+------------------------------------------------------------------------
+Your prompt now indicates `(config)#`, meaning you can modify settings. Configuration mode lets you change hostnames, banners, interfaces, VLANs, and more.
+
+For example, to change the hostname:
+------------------------------------------------------------------------
+TRANSIT-router(config)# hostname MyRouter
+Hostname set to MyRouter.
+MyRouter(config)#
+------------------------------------------------------------------------
+
+This updates the router’s hostname. Now your prompt shows `MyRouter` instead of `TRANSIT-router`.
+
+---
+
+ 5. Setting Up a TFTP Server
+
+What is a TFTP server?  
+A TFTP (Trivial File Transfer Protocol) server is often used for backing up configurations or IOS images. By telling the router where the TFTP server is located, you can easily save or restore configurations as needed.
+
+Command:
+------------------------------------------------------------------------
+MyRouter# tftp-server 192.168.168.50
+------------------------------------------------------------------------
+
+- tftp-server <ip>: Sets the IP address of the TFTP server the router will use.
+  
+What it does:  
+When you specify the TFTP server IP, the router knows where to send or retrieve files. This is handy in large networks where you manage multiple devices and need a centralized configuration backup location.
+
+Try it:
+From privileged mode:
+------------------------------------------------------------------------
+MyRouter# tftp-server 192.168.168.50
+tftp server set to 192.168.168.50
+------------------------------------------------------------------------
+
+---
+
+ 6. Understanding and Configuring VLANs
+
+What is a VLAN?  
+A VLAN (Virtual Local Area Network) creates a logical network segment within a switch or router, allowing devices to be grouped together regardless of their physical location. VLANs improve security, reduce broadcast traffic, and help segment the network into different logical groups.
+
+Scenario:  
+Imagine you want to create a VLAN for the Finance department (VLAN 3) to keep their traffic separate from the rest of the network.
+
+Steps to Configure a VLAN:
+
+1. Enter Configuration Mode:  
+   If you are not already there, do:
+   ------------------------------------------------------------------------
+   MyRouter# conf t
+   MyRouter(config)#
+   ------------------------------------------------------------------------
+
+2. Create a VLAN:  
+   ------------------------------------------------------------------------
+   MyRouter(config)# vlan 3
+   Vlan 3 created for port.
+   MyRouter(config-vlan)#
+   ------------------------------------------------------------------------
+   - vlan <id>: Creates a new VLAN with the specified ID and enters VLAN configuration sub-mode.
+
+3. Name the VLAN (optional but recommended for clarity):
+   ------------------------------------------------------------------------
+   MyRouter(config-vlan)# name Finance
+   Vlan name Finance
+   MyRouter(config-vlan)#
+   ------------------------------------------------------------------------
+   By naming the VLAN, you make network documentation easier to read and maintain.
+
+4. Exit VLAN Configuration:
+   Press `Ctrl+Z` or type `end`:
+   ------------------------------------------------------------------------
+   MyRouter(config-vlan)# end
+   MyRouter#
+   ------------------------------------------------------------------------
+
+5. Assign an Interface to the VLAN:
+   To place an interface (e.g., FastEthernet0/1) into VLAN 3, go back into configuration mode:
+   ------------------------------------------------------------------------
+   MyRouter# conf t
+   MyRouter(config)# interface FastEthernet 0/1
+   You have changed to interface FastEthernet 0/1.
+   MyRouter(config-if)#
+   ------------------------------------------------------------------------
+   
+   Set the switchport mode to access and assign the VLAN:
+   ------------------------------------------------------------------------
+   MyRouter(config-if)# switchport mode access
+   mode set to access.
+   
+   MyRouter(config-if)# switchport access vlan 3
+   switchport access set.
+   ------------------------------------------------------------------------
+   
+   These commands tell the router that this interface is part of VLAN 3 and will carry traffic for the Finance network segment.
+
+6. Verification:
+   ------------------------------------------------------------------------
+   MyRouter# show vlan brief
+   VLAN Name        Status    Ports
+   ---- --------------------- ----------- 
+   3    Finance     active    Fa0/1
+   ------------------------------------------------------------------------
+   
+   You should see VLAN 3 listed, named “Finance,” and your FastEthernet0/1 port assigned to it.
+
+---
+
+ 7. Saving Your Configuration
+
+Changes you make are reflected in the running configuration. To ensure they persist after a reboot, save them to the startup configuration:
+
+------------------------------------------------------------------------
+MyRouter# write mem
+Building Configuration...
+OK
+------------------------------------------------------------------------
+
+or
+
+------------------------------------------------------------------------
+MyRouter# copy run start
+Saving to startup-config
+OK
+------------------------------------------------------------------------
+
+This ensures that next time the router boots, your VLANs, hostnames, and other settings are restored.
+
+---
+
+ 8. Additional Useful Commands
+
+- `show mac address-table`: Displays the MAC addresses the router knows and the interfaces they are learned on.  
+- `show arp`: Lists IP-to-MAC mappings.  
+- `ping <IP>`: Tests connectivity to a specified IP. For example, `ping 192.168.168.1` sends ICMP Echo Requests and displays whether replies are received.  
+- `banner motd "Message"`: Sets a Message of the Day banner that appears before login.  
+- `snmp-server community public RO` / `snmp-server community private RW`: Configures SNMP communities for monitoring and management.
+
+It is important to note that configuring weak SNMP-SERVER community strings will leave a serious vulnerability in your system.  Easily guessed strings allow an attacker to see configuration settings and break into the router.
+
+---
+
+ 9. Exiting the Simulator
+
+When you are done, you can exit configuration mode and privileged mode by using the `exit` and `end` commands. Eventually, typing `exit` at the user mode prompt will close the simulator session.
+
+------------------------------------------------------------------------
+MyRouter# end
+MyRouter# exit
+MyRouter>
+------------------------------------------------------------------------
+
+And one more `exit`:
+------------------------------------------------------------------------
+MyRouter> exit
+Exiting simulator...
+------------------------------------------------------------------------
+
+---
+
+ 10. Summary
+
+In this course, you learned how to:
+
+- Log into the router and navigate between User EXEC, Privileged EXEC, and Configuration modes.
+- View system information using `show` commands.
+- Configure the router to recognize a TFTP server.
+- Create and name VLANs, and assign interfaces to those VLANs.
+- Save the running configuration to ensure changes are permanent.
+
+Hope you enjoyed this course and learned a little. This is of course just the tip of the iceberg but it's good to get a start!
+
+Kev
